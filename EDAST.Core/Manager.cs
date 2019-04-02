@@ -39,7 +39,13 @@ namespace EDAST.Core {
 
         public Manager(string addrPath, string confPath) {
             this.addrPath = addrPath;
+            if (!Directory.Exists(this.addrPath))
+                Directory.CreateDirectory(this.addrPath);
+
             this.confPath = confPath;
+            if (!Directory.Exists(this.confPath))
+                Directory.CreateDirectory(this.confPath);
+
             this.Addresses = new List<Address>();
             this.Addons = new List<IAddon>();
         }
@@ -48,11 +54,6 @@ namespace EDAST.Core {
         /// Load each address from the addresses path.
         /// </summary>
         public async Task<bool[]> LoadAddresses() {
-            if (!Directory.Exists(addrPath)) {
-                Directory.CreateDirectory(addrPath);
-                return new bool[0];
-            }
-
             var addrFiles = Directory.GetFiles(addrPath);
 
             return await Task.WhenAll(addrFiles

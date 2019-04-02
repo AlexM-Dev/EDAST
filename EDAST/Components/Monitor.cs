@@ -19,8 +19,9 @@ namespace EDAST.Components {
             this.interval = (double)interval / 1000;
 
             timer = new Timer(this.interval);
-            timer.Start();
         }
+
+        public void Start() { }
 
         private void monitorElapsed(object sender, ElapsedEventArgs e) {
             var result = manager.CheckAddresses(manager.Addresses);

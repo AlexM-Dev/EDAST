@@ -22,13 +22,14 @@ namespace EDAST {
             this.manager = new Manager(this.conf.AddressesPath, 
 				this.conf.ConfigPath);
             await this.manager.LoadAddresses();
-
-            // EDAST Monitor.
-            this.monitor = new Monitor(manager, this.conf.Interval);
-
+			
             // Addons loader.
             this.loader = new AddonLoader(manager, conf);
             this.loader.LoadAddons();
+
+            // EDAST Monitor.
+            this.monitor = new Monitor(manager, this.conf.Interval);
+            monitor.Start();
 
             return true;
         }
