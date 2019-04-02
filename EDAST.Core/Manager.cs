@@ -7,6 +7,7 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using EDAST.Core.Events;
 
 namespace EDAST.Core {
     /// <summary>
@@ -17,31 +18,29 @@ namespace EDAST.Core {
         #region Events
 
         public event EventHandler AddonsInitialised = (o, e) => { };
-        public event EventHandler Checking = (o, e) => { };
-        public event EventHandler Checked = (o, e) => { };
+        public event EventHandler<CheckingEventArgs> Checking = (o, e) => { };
+        public event EventHandler<FinishedEventArgs> Checked = (o, e) => { };
 
         #endregion
 
         #region Properties
 
         public List<Address> Addresses { get; }
+        public List<IAddon> Addons { get; }
 
         #endregion
 
         #region Fields 
 
-        private List<IAddon> addons;
         private string addrPath;
         private string confPath;
 
         #endregion
 
-        public Manager(string confPath,
-            List<Address> addresses, List<IAddon> addons) {
-
+        public Manager(string confPath) {
             this.confPath = confPath;
-            this.Addresses = addresses;
-            this.addons = addons;
+            this.Addresses = new List<Address>();
+            this.Addons = new List<IAddon>();
         }
 
         /// <summary>
@@ -49,6 +48,11 @@ namespace EDAST.Core {
         /// </summary>
         /// <param name="path">The path to load from.</param>
         public async Task<bool[]> LoadAddresses(string path) {
+            if (!Directory.Exists(path)) {
+                Directory.CreateDirectory(path);
+                return new bool[0];
+            }
+
             var addrFiles = Directory.GetFiles(addrPath);
 
             return await Task.WhenAll(addrFiles
@@ -74,7 +78,7 @@ namespace EDAST.Core {
         /// </summary>
         /// <returns></returns>
         public async Task<bool[]> InitialiseAddons() {
-            var result = await Task.WhenAll(addons
+            var result = await Task.WhenAll(Addons
                 .Select(async a => await a.InitialiseAsync(this,
                     a.UseConfig ? await getConfig(a) : null)));
 
@@ -120,9 +124,25 @@ namespace EDAST.Core {
         /// <param name="data">The data to send.</param>
         /// <returns>The returned data from each addon.</returns>
         public async Task<object[]> SendAsync(IAddon source, string dest, object data) {
-            return await Task.WhenAll(addons
+            return await Task.WhenAll(Addons
                 .Where(a => Regex.IsMatch(source.Name, dest))
                 .Select(async a => await a.ProcessDataAsync(source, data)));
+        }
+
+        public AddressResult CheckAddress(Address addr) {
+            var result = new AddressResult(addr);
+
+            this.Checking(this, new CheckingEventArgs(result));
+
+            return result;
+        }
+
+        public IEnumerable<AddressResult> CheckAddresses(IEnumerable<Address> addresses) {
+            var results = addresses.Select(addr => CheckAddress(addr));
+
+            this.Checked(this, new FinishedEventArgs(results));
+
+            return results;
         }
     }
 }

@@ -5,8 +5,8 @@ using System.Text;
 
 namespace EDAST.Core.Events {
     public class FinishedEventArgs : EventArgs {
-        public AddressResult[] Results { get; }
-        public FinishedEventArgs(AddressResult[] results) {
+        public IEnumerable<AddressResult> Results { get; }
+        public FinishedEventArgs(IEnumerable<AddressResult> results) {
             this.Results = results;
         }
     }

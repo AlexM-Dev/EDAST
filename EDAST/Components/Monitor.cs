@@ -1,5 +1,6 @@
 ﻿using EDAST.Core;
 using EDAST.Core.Data;
+using EDAST.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -21,12 +22,8 @@ namespace EDAST.Components {
             timer.Start();
         }
 
-        private async void monitorElapsed(object sender, ElapsedEventArgs e) {
-
-        }
-
-        private async bool isUp(Address addr) {
-
+        private void monitorElapsed(object sender, ElapsedEventArgs e) {
+            var result = manager.CheckAddresses(manager.Addresses);
         }
     }
 }
