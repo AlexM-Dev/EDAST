@@ -16,8 +16,9 @@ namespace EDAST.Core {
     public class Manager {
         #region Events
 
-        public event EventHandler AddonsInitialised =
-            (o, e) => { };
+        public event EventHandler AddonsInitialised = (o, e) => { };
+        public event EventHandler Checking = (o, e) => { };
+        public event EventHandler Checked = (o, e) => { };
 
         #endregion
 
@@ -80,6 +81,18 @@ namespace EDAST.Core {
             AddonsInitialised(this, EventArgs.Empty);
 
             return result;
+        }
+
+        public async Task<bool> SaveConfig<T>(IAddon source, T data) {
+            var conf = Path.Combine(confPath, source.Name + ".json");
+
+            try {
+                var confData = await data.SaveAsync(conf);
+            } catch {
+                return false;
+            }
+
+            return true;
         }
 
         private async Task<object> getConfig(IAddon source) {
