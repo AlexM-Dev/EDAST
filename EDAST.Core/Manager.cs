@@ -37,19 +37,19 @@ namespace EDAST.Core {
 
         #endregion
 
-        public Manager(string confPath) {
+        public Manager(string addrPath, string confPath) {
+            this.addrPath = addrPath;
             this.confPath = confPath;
             this.Addresses = new List<Address>();
             this.Addons = new List<IAddon>();
         }
 
         /// <summary>
-        /// Load each address from a given path.
+        /// Load each address from the addresses path.
         /// </summary>
-        /// <param name="path">The path to load from.</param>
-        public async Task<bool[]> LoadAddresses(string path) {
-            if (!Directory.Exists(path)) {
-                Directory.CreateDirectory(path);
+        public async Task<bool[]> LoadAddresses() {
+            if (!Directory.Exists(addrPath)) {
+                Directory.CreateDirectory(addrPath);
                 return new bool[0];
             }
 

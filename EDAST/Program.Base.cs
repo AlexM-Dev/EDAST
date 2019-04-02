@@ -19,8 +19,9 @@ namespace EDAST {
                 new Config());
 
             // Manager for addons.
-            this.manager = new Manager(this.conf.ConfigPath);
-            await this.manager.LoadAddresses(this.conf.AddressesPath);
+            this.manager = new Manager(this.conf.AddressesPath, 
+				this.conf.ConfigPath);
+            await this.manager.LoadAddresses();
 
             // EDAST Monitor.
             this.monitor = new Monitor(manager, this.conf.Interval);

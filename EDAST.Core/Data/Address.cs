@@ -13,11 +13,11 @@ namespace EDAST.Core.Data {
         /// The base address Url to use for processing.
         /// </summary>
         [JsonProperty("URL")]
-        public string Url { get; }
+        public string Url { get; set; }
 
         /// <summary>
         /// All parameters as processed by each appropriate addon.
         /// </summary>
-        public dynamic Parameters { get; }
+        public dynamic Parameters { get; set; }
     }
 }
