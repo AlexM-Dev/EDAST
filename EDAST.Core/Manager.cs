@@ -16,7 +16,8 @@ namespace EDAST.Core {
     public class Manager {
         #region Events
 
-
+        public event EventHandler AddonsInitialised =
+            (o, e) => { };
 
         #endregion
 
@@ -72,16 +73,20 @@ namespace EDAST.Core {
         /// </summary>
         /// <returns></returns>
         public async Task<bool[]> InitialiseAddons() {
-            return await Task.WhenAll(addons
-                .Select(async a => await a.InitialiseAsync(this, 
+            var result = await Task.WhenAll(addons
+                .Select(async a => await a.InitialiseAsync(this,
                     a.UseConfig ? await getConfig(a) : null)));
+
+            AddonsInitialised(this, EventArgs.Empty);
+
+            return result;
         }
 
         private async Task<object> getConfig(IAddon source) {
             var conf = Path.Combine(confPath, source.Name + ".json");
 
             try {
-                var confData = await ConfLoader.LoadAsync(conf, 
+                var confData = await ConfLoader.LoadAsync(conf,
                     new object());
 
                 return confData;

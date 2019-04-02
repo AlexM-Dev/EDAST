@@ -5,11 +5,10 @@ using System.Threading.Tasks;
 
 namespace EDAST {
     partial class Program {
-		static void Main(string[] args) {
-            MainAsync(args).Wait();
-        }
+        static void Main(string[] args) =>
+            new Program().MainAsync(args).Wait();
 
-		static async Task<bool> initAsync() {
+        async Task<bool> initAsync() {
             return true;
         }
     }
