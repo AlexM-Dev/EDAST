@@ -1,9 +1,13 @@
-﻿using System;
+﻿using EDAST.Core;
+using System;
+using System.Threading.Tasks;
 
 namespace EDAST {
-    class Program {
-        static void Main(string[] args) {
-            Console.WriteLine("Hello World!");
+    partial class Program {
+        static async Task MainAsync(string[] args) {
+            if (!await initAsync()) {
+                // err.
+            }
         }
     }
 }
