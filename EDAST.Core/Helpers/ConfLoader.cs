@@ -23,7 +23,7 @@ namespace EDAST.Core.Helpers {
 
                 return JsonConvert.DeserializeObject<T>(contents);
             } catch {
-                return default;
+                return def;
             }
         }
 
