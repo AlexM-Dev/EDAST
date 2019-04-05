@@ -7,7 +7,6 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
-using EDAST.Core.Events;
 
 namespace EDAST.Core {
     /// <summary>
@@ -28,9 +27,14 @@ namespace EDAST.Core {
 
         #endregion
 
-        public Manager() {
-            this.Addresses = new List<Address>();
-            this.AddonData = new Dictionary<IAddon, object>();
+        public Manager() : this(new List<Address>(), 
+            new Dictionary<IAddon, object>()) { }
+
+        public Manager(List<Address> addresses,
+            Dictionary<IAddon, object> addonData) {
+
+            this.Addresses = addresses;
+            this.AddonData = addonData;
         }
 
         /// <summary>
@@ -95,7 +99,7 @@ namespace EDAST.Core {
         /// <returns>The processed AddressResults.</returns>
         public Task<AddressResult[]> ProcessAddressesAsync(params Address[] addr) {
             var result = Task.WhenAll(addr
-                .Select(async a => await ProcessAddressAsync(a));
+                .Select(async a => await ProcessAddressAsync(a)));
 
             return result;
         }
@@ -107,7 +111,7 @@ namespace EDAST.Core {
         /// <param name="name">The name (regex) of the addons(s).</param>
         /// <param name="data">The data to send.</param>
         /// <returns>Data returned from each addon.</returns>
-        public async Task<Dictionary<IAddon, object>> SendDataAsync(IAddon source, 
+        public async Task<Dictionary<IAddon, object>> SendDataAsync(IAddon source,
             string name, object data) {
 
             var result = await Task.WhenAll(AddonData
