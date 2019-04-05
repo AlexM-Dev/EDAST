@@ -31,7 +31,7 @@ namespace EDAST.Core {
         /// <summary>
         /// Sends a shutdown signal to the addon.
         /// </summary>
-        Task ShutdownAsync();
+        Task<bool> ShutdownAsync();
 
         /// <summary>
         /// Processes an address to determine if successful or not.

@@ -18,57 +18,19 @@ namespace EDAST.Core {
         #region Events
 
         public event EventHandler AddonsInitialised = (o, e) => { };
-        public event EventHandler<CheckingEventArgs> Checking = (o, e) => { };
-        public event EventHandler<FinishedEventArgs> Checked = (o, e) => { };
 
         #endregion
 
         #region Properties
 
+        public Dictionary<IAddon, object> AddonData { get; }
         public List<Address> Addresses { get; }
-        public List<IAddon> Addons { get; }
 
         #endregion
 
-        #region Fields 
-
-        private string addrPath;
-        private string confPath;
-
-        #endregion
-
-        public Manager(string addrPath, string confPath) {
-            this.addrPath = addrPath;
-            if (!Directory.Exists(this.addrPath))
-                Directory.CreateDirectory(this.addrPath);
-
-            this.confPath = confPath;
-            if (!Directory.Exists(this.confPath))
-                Directory.CreateDirectory(this.confPath);
-
+        public Manager() {
             this.Addresses = new List<Address>();
-            this.Addons = new List<IAddon>();
-        }
-
-        /// <summary>
-        /// Load each address from the addresses path.
-        /// </summary>
-        public async Task<bool[]> LoadAddresses() {
-            var addrFiles = Directory.GetFiles(addrPath);
-
-            return await Task.WhenAll(addrFiles
-                .Select(async a => {
-                    try {
-                        var addrData = await ConfLoader.LoadAsync(a,
-                            new Address());
-
-                        this.Addresses.Add(addrData);
-
-                        return true;
-                    } catch {
-                        return false;
-                    }
-                }));
+            this.AddonData = new Dictionary<IAddon, object>();
         }
 
         /// <summary>
@@ -78,42 +40,36 @@ namespace EDAST.Core {
         /// their default configuration files.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool[]> InitialiseAddons() {
-            var result = await Task.WhenAll(Addons
-                .Select(async a => await a.InitialiseAsync(this,
-                    a.UseConfig ? await getConfig(a) : null)));
+        public async Task<bool[]> InitialiseAddonsAsync() {
+            var result = await Task.WhenAll(AddonData
+                .Select(async a => await a.Key.InitialiseAsync(this,
+                    a.Key.UseConfig ? a.Value : null)));
 
             AddonsInitialised(this, EventArgs.Empty);
 
             return result;
         }
 
-        public async Task<bool> SaveConfig<T>(IAddon source, T data) {
-            var conf = Path.Combine(confPath, source.Name + ".json");
+        public async Task<bool[]> ShutdownAddonsAsync() {
+            var result = await Task.WhenAll(AddonData
+                .Select(async a => await a.Key.ShutdownAsync()));
 
-            try {
-                var confData = await data.SaveAsync(conf);
-            } catch {
-                return false;
-            }
-
-            return true;
+            return result;
         }
 
-        private async Task<object> getConfig(IAddon source) {
-            var conf = Path.Combine(confPath, source.Name + ".json");
+        public Task<AddressResult> ProcessAddressAsync(Address addr) {
 
-            try {
-                var confData = await ConfLoader.LoadAsync(conf,
-                    new object());
-
-                return confData;
-            } catch {
-                return null;
-            }
         }
 
-        public async Task Log(IAddon source, string message) {
+        public Task<AddressResult[]> ProcessAddressesAsync(Address addr) {
+
+        }
+
+        public Task<object[]> SendDataAsync(string nameRegex, object data) {
+
+        }
+
+        public async Task LogAsync(IAddon source, string message) {
 
         }
 
