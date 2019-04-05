@@ -10,10 +10,9 @@ namespace EDAST.Core.Data {
     /// </summary>
     public class Address {
         /// <summary>
-        /// The base address Url to use for processing.
+        /// The base address Location to use for processing.
         /// </summary>
-        [JsonProperty("URL")]
-        public string Url { get; set; }
+        public string Location { get; set; }
 
         /// <summary>
         /// All parameters as processed by each appropriate addon.

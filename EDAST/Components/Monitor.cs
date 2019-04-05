@@ -24,7 +24,7 @@ namespace EDAST.Components {
         public void Start() { }
 
         private void monitorElapsed(object sender, ElapsedEventArgs e) {
-            var result = manager.CheckAddresses(manager.Addresses);
+            var result = manager.CheckAddresses();
         }
     }
 }

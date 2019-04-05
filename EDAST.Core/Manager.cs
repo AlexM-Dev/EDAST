@@ -138,8 +138,13 @@ namespace EDAST.Core {
             return result;
         }
 
-        public IEnumerable<AddressResult> CheckAddresses(IEnumerable<Address> addresses) {
-            var results = addresses.Select(addr => CheckAddress(addr));
+        /// <summary>
+        /// Begin checking of addresses using all available addons.
+        /// </summary>
+        /// <param name="addresses">The addresses to check.</param>
+        /// <returns></returns>
+        public IEnumerable<AddressResult> CheckAddresses() {
+            var results = Addresses.Select(addr => CheckAddress(addr));
 
             this.Checked(this, new FinishedEventArgs(results));
 

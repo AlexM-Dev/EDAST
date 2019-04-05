@@ -26,6 +26,7 @@ namespace EDAST {
             // Addons loader.
             this.loader = new AddonLoader(manager, conf);
             this.loader.LoadAddons();
+            await this.manager.InitialiseAddons();
 
             // EDAST Monitor.
             this.monitor = new Monitor(manager, this.conf.Interval);

@@ -9,6 +9,7 @@ namespace EDAST {
             if (!await initAsync()) {
                 // err.
             }
+            Console.WriteLine("Yo");
         }
     }
 }
