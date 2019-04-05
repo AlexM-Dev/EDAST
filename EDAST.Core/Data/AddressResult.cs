@@ -12,7 +12,7 @@ namespace EDAST.Core.Data {
             this.Failures = new List<string>();
         }
 
-        public AddressResult Merge(params AddressResult[] results) {
+        public static AddressResult Merge(params AddressResult[] results) {
             Address addr = null;
             AddressResult addrResult = null;
 

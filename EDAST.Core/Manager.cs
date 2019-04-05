@@ -40,29 +40,54 @@ namespace EDAST.Core {
         /// their default configuration files.
         /// </summary>
         /// <returns></returns>
-        public async Task<bool[]> InitialiseAddonsAsync() {
+        public async Task<Dictionary<IAddon, bool>> InitialiseAddonsAsync() {
+            // Attempts to initialise each addon.
+            // Returns statuses of each addon.
             var result = await Task.WhenAll(AddonData
-                .Select(async a => await a.Key.InitialiseAsync(this,
-                    a.Key.UseConfig ? a.Value : null)));
+                .Select(async a => (a.Key, await a.Key.InitialiseAsync(this,
+                    a.Key.UseConfig ? a.Value : null))));
 
             AddonsInitialised(this, EventArgs.Empty);
 
-            return result;
+            // Convert array result to dictionary.
+            return result.ToDictionary(x => x.Key, x => x.Item2);
         }
 
-        public async Task<bool[]> ShutdownAddonsAsync() {
+        /// <summary>
+        /// Sends a shutdown signal to all addons.
+        /// </summary>
+        /// <returns>Whether each addon was successful in shutting down.</returns>
+        public async Task<Dictionary<IAddon, bool>> ShutdownAddonsAsync() {
+            // Wait for each addon to receive the shutdown signal.
             var result = await Task.WhenAll(AddonData
-                .Select(async a => await a.Key.ShutdownAsync()));
+                .Select(async a => (a.Key, await a.Key.ShutdownAsync())));
+
+            // Return success/not.
+            return result.ToDictionary(x => x.Key, x => x.Item2);
+        }
+
+        public async Task<AddressResult> ProcessAddressAsync(Address addr) {
+            // Send processing requests to each addon.
+            var result = await Task.WhenAll(AddonData
+                .Where(a => a.Key.DoesProcessAddress)
+                .Select(async a => await a.Key.ProcessAddressAsync(addr)));
+
+            // Process each addon's result and merge them.
+            var finalResult = AddressResult.Merge(result);
+
+            // Allow each addon to read the final result of the address.
+            await Task.WhenAll(AddonData
+                .Select(a => a.Key.ReadResultAsync(finalResult)));
+
+            // Return the processed result.
+            return finalResult;
+        }
+
+        public Task<AddressResult[]> ProcessAddressesAsync(params Address[] addr) {
+            var result = Task.WhenAll(addr
+                .Select(async a => await ProcessAddressAsync(a));
 
             return result;
-        }
-
-        public Task<AddressResult> ProcessAddressAsync(Address addr) {
-
-        }
-
-        public Task<AddressResult[]> ProcessAddressesAsync(Address addr) {
-
         }
 
         public Task<object[]> SendDataAsync(string nameRegex, object data) {
