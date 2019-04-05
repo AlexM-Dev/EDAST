@@ -39,7 +39,7 @@ namespace EDAST.Core {
         /// to the current instance of this class, and loads
         /// their default configuration files.
         /// </summary>
-        /// <returns></returns>
+        /// <returns>Whether each addon is successful in initialising.</returns>
         public async Task<Dictionary<IAddon, bool>> InitialiseAddonsAsync() {
             // Attempts to initialise each addon.
             // Returns statuses of each addon.
@@ -66,6 +66,11 @@ namespace EDAST.Core {
             return result.ToDictionary(x => x.Key, x => x.Item2);
         }
 
+        /// <summary>
+        /// Sends a request to each addon to process an address.
+        /// </summary>
+        /// <param name="addr">The address to process.</param>
+        /// <returns>The processed AddressResult.</returns>
         public async Task<AddressResult> ProcessAddressAsync(Address addr) {
             // Send processing requests to each addon.
             var result = await Task.WhenAll(AddonData
@@ -83,6 +88,11 @@ namespace EDAST.Core {
             return finalResult;
         }
 
+        /// <summary>
+        /// Sends requests to each addon to process a series of addresses.
+        /// </summary>
+        /// <param name="addr">The addresses to process.</param>
+        /// <returns>The processed AddressResults.</returns>
         public Task<AddressResult[]> ProcessAddressesAsync(params Address[] addr) {
             var result = Task.WhenAll(addr
                 .Select(async a => await ProcessAddressAsync(a));
@@ -90,46 +100,26 @@ namespace EDAST.Core {
             return result;
         }
 
-        public Task<object[]> SendDataAsync(string nameRegex, object data) {
+        /// <summary>
+        /// Sends a message/data to another addon(s).
+        /// </summary>
+        /// <param name="source">The source addon.</param>
+        /// <param name="name">The name (regex) of the addons(s).</param>
+        /// <param name="data">The data to send.</param>
+        /// <returns>Data returned from each addon.</returns>
+        public async Task<Dictionary<IAddon, object>> SendDataAsync(IAddon source, 
+            string name, object data) {
 
+            var result = await Task.WhenAll(AddonData
+                .Where(a => Regex.IsMatch(source.Name, name))
+                .Select(async a => (a.Key, await a.Key
+                                          .ProcessDataAsync(source, data))));
+
+            return result.ToDictionary(x => x.Key, x => x.Item2);
         }
 
         public async Task LogAsync(IAddon source, string message) {
 
-        }
-
-        /// <summary>
-        /// Sends data to all addons with a matching name.
-        /// </summary>
-        /// <param name="source">The source addon.</param>
-        /// <param name="dest">The destination addon name (Regex).</param>
-        /// <param name="data">The data to send.</param>
-        /// <returns>The returned data from each addon.</returns>
-        public async Task<object[]> SendAsync(IAddon source, string dest, object data) {
-            return await Task.WhenAll(Addons
-                .Where(a => Regex.IsMatch(source.Name, dest))
-                .Select(async a => await a.ProcessDataAsync(source, data)));
-        }
-
-        public AddressResult CheckAddress(Address addr) {
-            var result = new AddressResult(addr);
-
-            this.Checking(this, new CheckingEventArgs(result));
-
-            return result;
-        }
-
-        /// <summary>
-        /// Begin checking of addresses using all available addons.
-        /// </summary>
-        /// <param name="addresses">The addresses to check.</param>
-        /// <returns></returns>
-        public IEnumerable<AddressResult> CheckAddresses() {
-            var results = Addresses.Select(addr => CheckAddress(addr));
-
-            this.Checked(this, new FinishedEventArgs(results));
-
-            return results;
         }
     }
 }
