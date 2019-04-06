@@ -1,4 +1,5 @@
 ﻿using EDAST.Core;
+using EDAST.Core.Data;
 using System;
 using System.Threading.Tasks;
 
@@ -7,6 +8,8 @@ namespace EDAST.Addons.Http {
         public string Name => "HTTP Checks for EDAST";
 
         public bool UseConfig => true;
+
+        public bool DoesProcessAddress => true;
 
         public async Task<bool> InitialiseAsync(Manager manager, object conf) {
             manager.AddonsInitialised += this.Manager_AddonsInitialised;
@@ -23,7 +26,20 @@ namespace EDAST.Addons.Http {
             return true;
         }
 
-        public void Shutdown() {
+        public async Task<bool> ShutdownAsync() {
+            return false;
+        }
+
+        public async Task<AddressResult> ProcessAddressAsync(Address addr) {
+            return new AddressResult(addr);
+        }
+
+        public async Task ReadResultAsync(AddressResult result) {
+
+        }
+
+        public async Task ReadResultsAsync(params AddressResult[] results) {
+
         }
     }
 }

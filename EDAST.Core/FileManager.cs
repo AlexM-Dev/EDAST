@@ -24,11 +24,11 @@ namespace EDAST.Core {
             if (!Directory.Exists(ConfigPath))
                 Directory.CreateDirectory(ConfigPath);
 
-            foreach (var data in manager.AddonData) {
+            foreach (var addon in manager.AddonData.Keys.ToList()) {
                 object conf = null;
 
-                if (data.Key.UseConfig) {
-                    var confName = new StringBuilder(data.Key.Name);
+                if (addon.UseConfig) {
+                    var confName = new StringBuilder(addon.Name);
 
                     foreach (var c in invalidChars)
                         confName = confName.Replace(c, '_');
@@ -41,7 +41,7 @@ namespace EDAST.Core {
                     conf = null;
                 }
 
-                manager.AddonData[data.Key] = conf;
+                manager.AddonData[addon] = conf;
             }
         }
 
