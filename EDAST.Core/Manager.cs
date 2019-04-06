@@ -99,8 +99,8 @@ namespace EDAST.Core {
         /// </summary>
         /// <param name="addr">The addresses to process.</param>
         /// <returns>The processed AddressResults.</returns>
-        public Task<AddressResult[]> ProcessAddressesAsync(params Address[] addr) {
-            var result = Task.WhenAll(addr
+        public Task<AddressResult[]> ProcessAddressesAsync() {
+            var result = Task.WhenAll(Addresses
                 .Select(async a => await ProcessAddressAsync(a)));
 
             return result;

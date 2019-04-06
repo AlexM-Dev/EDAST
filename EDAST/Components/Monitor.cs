@@ -1,6 +1,4 @@
 ﻿using EDAST.Core;
-using EDAST.Core.Data;
-using EDAST.Core.Events;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -24,7 +22,7 @@ namespace EDAST.Components {
         public void Start() { }
 
         private void monitorElapsed(object sender, ElapsedEventArgs e) {
-            var result = manager.CheckAddresses();
+            var result = manager.ProcessAddressesAsync();
         }
     }
 }

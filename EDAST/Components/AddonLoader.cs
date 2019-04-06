@@ -26,7 +26,9 @@ namespace EDAST.Components {
             var files = getFiles();
             var addons = getAddons(files);
 
-            manager.Addons.AddRange(addons);
+            foreach (var addon in addons) {
+                manager.AddonData.Add(addon, null);
+            }
         }
 
         private string[] getFiles() {
