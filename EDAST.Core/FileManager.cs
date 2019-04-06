@@ -5,8 +5,9 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Linq;
 using EDAST.Core.Data;
+using EDAST.Core.IO;
 
-namespace EDAST.Core.IO {
+namespace EDAST.Core {
     public class FileManager {
         public string ConfigPath { get; set; }
         public string AddressPath { get; set; }
@@ -68,6 +69,5 @@ namespace EDAST.Core.IO {
                 manager.Addresses.Add(address);
             }
         }
-
     }
 }
