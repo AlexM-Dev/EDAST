@@ -6,6 +6,7 @@ using System.Text;
 using System.Linq;
 using System.Threading.Tasks;
 using System.Text.RegularExpressions;
+using EDAST.Core.IO;
 
 namespace EDAST.Core {
     /// <summary>
@@ -23,6 +24,7 @@ namespace EDAST.Core {
 
         public Dictionary<IAddon, object> AddonData { get; }
         public List<Address> Addresses { get; }
+        public FileManager FileManager { get; }
 
         #endregion
 
@@ -34,6 +36,8 @@ namespace EDAST.Core {
 
             this.Addresses = addresses;
             this.AddonData = addonData;
+
+            this.FileManager = new FileManager(this);
         }
 
         /// <summary>
