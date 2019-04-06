@@ -14,15 +14,20 @@ namespace EDAST.Components {
 
         public Monitor(Manager manager, int interval) {
             this.manager = manager;
-            this.interval = (double)interval / 1000;
+            this.interval = (double)interval * 1000;
 
             timer = new Timer(this.interval);
         }
 
-        public void Start() { }
+        public void Start() {
+            timer.Elapsed += monitorElapsed;
 
-        private void monitorElapsed(object sender, ElapsedEventArgs e) {
-            var result = manager.ProcessAddressesAsync();
+            timer.Start();
+        }
+
+        private async void monitorElapsed(object sender, ElapsedEventArgs e) {
+            var result = await manager.ProcessAddressesAsync();
+            Console.WriteLine("Performed check. " + result.Length);
         }
     }
 }

@@ -10,6 +10,8 @@ namespace EDAST {
                 // err.
             }
             Console.WriteLine("Yo");
+
+            await Task.Delay(-1);
         }
     }
 }

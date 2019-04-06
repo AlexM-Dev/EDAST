@@ -31,6 +31,7 @@ namespace EDAST.Addons.Http {
         }
 
         public async Task<AddressResult> ProcessAddressAsync(Address addr) {
+            Console.WriteLine("A check http addon");
             return new AddressResult(addr);
         }
 
