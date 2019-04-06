@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 
 namespace EDAST.Core.IO {
-    public static class ConfLoader {
+    public static class ConfManager {
         /// <summary>
         /// Load a JSON file.
         /// </summary>
