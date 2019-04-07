@@ -27,7 +27,7 @@ namespace EDAST.Core {
 
         #endregion
 
-        public Manager() : this(new List<Address>(), 
+        public Manager() : this(new List<Address>(),
             new Dictionary<IAddon, object>()) { }
 
         public Manager(List<Address> addresses,
@@ -50,8 +50,15 @@ namespace EDAST.Core {
             // Attempts to initialise each addon.
             // Returns statuses of each addon.
             var result = await Task.WhenAll(AddonData
-                .Select(async a => (a.Key, await a.Key.InitialiseAsync(this,
-                    a.Key.UseConfig ? a.Value : null))));
+                .Select(async a => {
+                    try {
+                        var init = await a.Key.InitialiseAsync(this,
+                            a.Key.UseConfig ? a.Value : null);
+                        return (a.Key, init);
+                    } catch {
+                        return (a.Key, false);
+                    }
+                }));
 
             AddonsInitialised(this, EventArgs.Empty);
 
@@ -81,14 +88,26 @@ namespace EDAST.Core {
             // Send processing requests to each addon.
             var result = await Task.WhenAll(AddonData
                 .Where(a => a.Key.DoesProcessAddress)
-                .Select(async a => await a.Key.ProcessAddressAsync(addr)));
+                .Select(async a => {
+                    try {
+                        return await a.Key.ProcessAddressAsync(addr);
+                    } catch {
+                        return new AddressResult(addr) {
+                            ProcessErrorOccurred = true
+                        };
+                    }
+                }));
 
             // Process each addon's result and merge them.
             var finalResult = AddressResult.Merge(result);
 
             // Allow each addon to read the final result of the address.
             await Task.WhenAll(AddonData
-                .Select(a => a.Key.ReadResultAsync(finalResult)));
+                .Select(async a => {
+                    try {
+                        await a.Key.ReadResultAsync(finalResult);
+                    } catch { }
+                }));
 
             // Return the processed result.
             return finalResult;
@@ -118,8 +137,14 @@ namespace EDAST.Core {
 
             var result = await Task.WhenAll(AddonData
                 .Where(a => Regex.IsMatch(source.Name, name))
-                .Select(async a => (a.Key, await a.Key
-                                          .ProcessDataAsync(source, data))));
+                .Select(async a => {
+                    try {
+                        var proc = await a.Key.ProcessDataAsync(source, data);
+                        return (a.Key, proc);
+                    } catch {
+                        return (a.Key, null);
+                    }
+                }));
 
             return result.ToDictionary(x => x.Key, x => x.Item2);
         }

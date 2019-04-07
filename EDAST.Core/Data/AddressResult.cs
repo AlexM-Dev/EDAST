@@ -6,6 +6,7 @@ namespace EDAST.Core.Data {
     public class AddressResult {
         public Address Address { get; }
         public List<string> Failures { get; }
+        public bool ProcessErrorOccurred { get; set; }
 
         public AddressResult(Address addr) {
             this.Address = addr;
@@ -23,6 +24,9 @@ namespace EDAST.Core.Data {
                 } else if (addr != result.Address) return null;
 
                 addrResult.Failures.AddRange(result.Failures);
+
+                if (result.ProcessErrorOccurred)
+                    addrResult.ProcessErrorOccurred = true;
             }
 
             return addrResult;
