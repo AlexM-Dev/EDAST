@@ -15,6 +15,11 @@ namespace EDAST.Core.Data {
         public string Location { get; set; }
 
         /// <summary>
+        /// The minimum state in order to process as "down".
+        /// </summary>
+        public State StateSensitivity { get; set; }
+
+        /// <summary>
         /// All parameters as processed by each appropriate addon.
         /// </summary>
         public dynamic Parameters { get; set; }
