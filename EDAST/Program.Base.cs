@@ -21,7 +21,7 @@ namespace EDAST {
             /* Manager */
             this.manager = new Manager();
 
-            // Addons loader.
+            /* Addons loader. */
             this.loader = new AddonLoader(manager, conf);
             this.loader.LoadAddons();
 
@@ -34,7 +34,7 @@ namespace EDAST {
             await this.manager.FileManager.LoadAddonsConfigAsync();
             await this.manager.InitialiseAddonsAsync();
 
-            // EDAST Monitor.
+            /* EDAST Monitor. */
             this.monitor = new Monitor(manager, this.conf.Interval);
             monitor.Start();
 

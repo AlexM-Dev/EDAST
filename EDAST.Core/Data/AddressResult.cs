@@ -13,6 +13,10 @@ namespace EDAST.Core.Data {
             this.States = new Dictionary<string, State>();
         }
 
+        /// <summary>
+        /// Checks if an address is up given the states and sensitivity of the address.
+        /// </summary>
+        /// <returns>Whether it's up or not.</returns>
         public bool IsAddressUp() {
             var sensitivity = Address.StateSensitivity;
 
@@ -24,6 +28,11 @@ namespace EDAST.Core.Data {
             return true;
         }
 
+        /// <summary>
+        /// Merge a set of AddressResults into one.
+        /// </summary>
+        /// <param name="results">The AddressResults to merge.</param>
+        /// <returns>The merged result.</returns>
         public static AddressResult Merge(params AddressResult[] results) {
             Address addr = null;
             AddressResult addrResult = null;

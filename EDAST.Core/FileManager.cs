@@ -18,21 +18,30 @@ namespace EDAST.Core {
             this.manager = m;
         }
 
+        /// <summary>
+        /// Loads configuration for each addon.
+        /// </summary>
         public async Task LoadAddonsConfigAsync() {
+            // Get all invalid characters for the system.
             var invalidChars = Path.GetInvalidPathChars();
 
+            // Create the config path if non-existent. 
             if (!Directory.Exists(ConfigPath))
                 Directory.CreateDirectory(ConfigPath);
 
+            // Enumerate through each addon.
             foreach (var addon in manager.AddonData.Keys.ToList()) {
                 object conf = null;
 
+                // Check if the addon uses a configuration file.
                 if (addon.UseConfig) {
+                    // Replace all invalid characters within the addon name.
                     var confName = new StringBuilder(addon.Name);
 
                     foreach (var c in invalidChars)
                         confName = confName.Replace(c, '_');
 
+                    // Get the config file.
                     string confPath = Path.Combine(ConfigPath,
                         confName.ToString() + ".json");
 
@@ -41,10 +50,18 @@ namespace EDAST.Core {
                     conf = null;
                 }
 
+                // Set the config for the addon.
                 manager.AddonData[addon] = conf;
             }
         }
 
+        /// <summary>
+        /// Saves an addon's config file under the config path.
+        /// </summary>
+        /// <typeparam name="T">The type of data to save.</typeparam>
+        /// <param name="source">The addon source.</param>
+        /// <param name="data">The data to save.</param>
+        /// <returns></returns>
         public async Task<bool> SaveConfigAsync<T>(IAddon source, T data) {
             var conf = Path.Combine(ConfigPath, source.Name + ".json");
 
@@ -57,6 +74,9 @@ namespace EDAST.Core {
             return true;
         }
 
+        /// <summary>
+        /// Loads a set of addresses from the AddressPath in the current instance.
+        /// </summary>
         public async Task LoadAddressesAsync() {
             if (!Directory.Exists(AddressPath))
                 Directory.CreateDirectory(AddressPath);

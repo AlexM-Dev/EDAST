@@ -22,6 +22,9 @@ namespace EDAST.Components {
             this.conf = conf;
         }
 
+        /// <summary>
+        /// Loads each addon into the manager, with empty configurations.
+        /// </summary>
         public void LoadAddons() {
             var files = getFiles();
             var addons = getAddons(files);

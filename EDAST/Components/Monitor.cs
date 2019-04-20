@@ -17,11 +17,13 @@ namespace EDAST.Components {
             this.interval = (double)interval * 1000;
 
             timer = new Timer(this.interval);
+            timer.Elapsed += monitorElapsed;
         }
 
+        /// <summary>
+        /// Starts the monitor.
+        /// </summary>
         public void Start() {
-            timer.Elapsed += monitorElapsed;
-
             timer.Start();
         }
 
